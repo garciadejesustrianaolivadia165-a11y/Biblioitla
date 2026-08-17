@@ -12,7 +12,7 @@ INSTITUCION = "Instituto Tecnológico de las Américas (ITLA)"
 PROYECTO = "BiblioITLA — Sistema de Gestión de Biblioteca"
 FECHA = "17 de agosto de 2026"
 
-REPOSITORIO = "https://github.com/USUARIO/biblioitla"
+REPOSITORIO = "https://github.com/garciadejesustrianaolivadia165-a11y/Biblioitla"
 TABLERO = "https://TU-DOMINIO.atlassian.net/jira/software/projects/BIB/boards/1"
 VIDEO = "Enlace de OneDrive institucional al video de demostración"
 
