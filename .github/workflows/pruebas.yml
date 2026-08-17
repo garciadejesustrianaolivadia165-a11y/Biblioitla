@@ -1,0 +1,66 @@
+## Integracion continua: ejecuta las tres capas de pruebas en cada push.
+##
+## Si alguna falla, el commit queda marcado en rojo en GitHub. Los informes
+## de cobertura y las capturas de las pruebas E2E se guardan como artefactos
+## descargables desde la pestania Actions.
+
+name: Pruebas automatizadas
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pruebas:
+    name: Unitarias, API y E2E
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el codigo
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Instalar el navegador de Playwright
+        run: python -m playwright install --with-deps chromium
+
+      - name: Pruebas unitarias
+        run: python -m pytest pruebas/unitarias -v
+
+      - name: Pruebas de API
+        run: python -m pytest pruebas/api -v
+
+      - name: Pruebas E2E con navegador
+        run: python -m pytest pruebas/e2e -v
+
+      - name: Suite completa con cobertura
+        run: |
+          python -m pytest --cov=app \
+            --cov-report=term-missing \
+            --cov-report=html:evidencias/cobertura \
+            --cov-report=xml:evidencias/cobertura.xml
+
+      - name: Guardar evidencias
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencias-de-pruebas
+          path: |
+            evidencias/cobertura/
+            evidencias/capturas/
+            evidencias/cobertura.xml
+          retention-days: 30
+
+    env:
+      PYTHONPATH: .

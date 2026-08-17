@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}BiblioITLA{% endblock %}</title>
+  <link rel="stylesheet" href="/static/estilos.css">
+</head>
+<body>
+{% if usuario %}
+<header class="barra">
+  <div class="marca">
+    <span class="logo">BI</span>
+    <div>
+      <strong>BiblioITLA</strong>
+      <small>Sistema de Gestión de Biblioteca</small>
+    </div>
+  </div>
+  <nav>
+    <a href="/" {% if activo=='panel' %}class="actual"{% endif %}>Panel</a>
+    <a href="/libros" {% if activo=='libros' %}class="actual"{% endif %}>Libros</a>
+    <a href="/socios" {% if activo=='socios' %}class="actual"{% endif %}>Socios</a>
+    <a href="/prestamos" {% if activo=='prestamos' %}class="actual"{% endif %}>Préstamos</a>
+  </nav>
+  <div class="sesion">
+    <span>{{ usuario.nombre }}</span>
+    <a class="salir" href="/logout">Salir</a>
+  </div>
+</header>
+{% endif %}
+
+<main>
+  {% if mensaje %}<div class="aviso ok" data-test="mensaje">{{ mensaje }}</div>{% endif %}
+  {% if error %}<div class="aviso mal" data-test="error">{{ error }}</div>{% endif %}
+  {% block contenido %}{% endblock %}
+</main>
+
+<footer>
+  BiblioITLA v1.0.0 &middot; Proyecto Final de Programación III &middot;
+  Triana Olivadia García de Jesús
+</footer>
+</body>
+</html>

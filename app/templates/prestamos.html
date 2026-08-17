@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% set activo = 'prestamos' %}
+{% block titulo %}Préstamos · BiblioITLA{% endblock %}
+{% block contenido %}
+<h1>Préstamos</h1>
+
+<section class="panel">
+  <h2>Registrar un préstamo</h2>
+  <form class="rejilla ancha" method="post" action="/prestamos">
+    <label>Socio
+      <select name="socio_id" data-test="sel-socio" required>
+        <option value="">— Seleccione un socio —</option>
+        {% for s in socios %}<option value="{{ s.id }}">{{ s.matricula }} — {{ s.nombre }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Libro
+      <select name="libro_id" data-test="sel-libro" required>
+        <option value="">— Seleccione un libro —</option>
+        {% for l in libros %}
+          <option value="{{ l.id }}" {% if l.disponibles <= 0 %}disabled{% endif %}>
+            {{ l.titulo }} ({{ l.disponibles }} disp.)
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+    <button type="submit" data-test="guardar-prestamo">Registrar préstamo</button>
+  </form>
+  <p class="nota">Se permiten hasta {{ max_prestamos }} préstamos por socio.
+  El plazo es de 14 días; después se cobra RD$ {{ mora_dia }} por día de retraso.</p>
+</section>
+
+<section class="panel">
+  <div class="filtros">
+    <a href="/prestamos?estado=activos" class="{% if estado=='activos' %}actual{% endif %}">Activos</a>
+    <a href="/prestamos?estado=vencidos" class="{% if estado=='vencidos' %}actual{% endif %}">Vencidos</a>
+    <a href="/prestamos?estado=devueltos" class="{% if estado=='devueltos' %}actual{% endif %}">Devueltos</a>
+    <a href="/prestamos?estado=todos" class="{% if estado=='todos' %}actual{% endif %}">Todos</a>
+  </div>
+
+  <table data-test="tabla-prestamos">
+    <thead>
+      <tr><th>#</th><th>Socio</th><th>Libro</th><th>Prestado</th><th>Vence</th>
+          <th>Devuelto</th><th class="num">Mora</th><th></th></tr>
+    </thead>
+    <tbody>
+    {% for p in prestamos %}
+      <tr data-test="fila-prestamo">
+        <td class="mono">{{ p.id }}</td>
+        <td>{{ p.socio.nombre }}</td>
+        <td><strong>{{ p.libro.titulo }}</strong></td>
+        <td>{{ p.fecha_prestamo }}</td>
+        <td {% if p.esta_vencido() %}class="alerta"{% endif %}>{{ p.fecha_vencimiento }}</td>
+        <td>{{ p.fecha_devolucion or '—' }}</td>
+        <td class="num">{% if p.mora %}RD$ {{ p.mora }}{% else %}—{% endif %}</td>
+        <td>
+          {% if p.activo %}
+          <form method="post" action="/prestamos/{{ p.id }}/devolver">
+            <button class="pequeno" type="submit" data-test="devolver">Devolver</button>
+          </form>
+          {% else %}<span class="bien">Cerrado</span>{% endif %}
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8" class="vacio">No hay préstamos en este estado.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

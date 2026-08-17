@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titulo %}Iniciar sesión · BiblioITLA{% endblock %}
+{% block contenido %}
+<div class="acceso">
+  <div class="tarjeta-acceso">
+    <span class="logo grande">BI</span>
+    <h1>BiblioITLA</h1>
+    <p class="sub">Sistema de Gestión de Biblioteca</p>
+    {% if error %}<div class="aviso mal" data-test="error-login">{{ error }}</div>{% endif %}
+    <form method="post" action="/login">
+      <label>Usuario
+        <input name="nombre_usuario" data-test="usuario" required autofocus>
+      </label>
+      <label>Contraseña
+        <input name="clave" type="password" data-test="clave" required>
+      </label>
+      <button type="submit" data-test="entrar">Entrar</button>
+    </form>
+    <p class="pista">Usuario de demostración: <code>admin</code> / <code>BiblioITLA2026</code></p>
+  </div>
+</div>
+{% endblock %}

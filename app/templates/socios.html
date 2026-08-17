@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% set activo = 'socios' %}
+{% block titulo %}Socios · BiblioITLA{% endblock %}
+{% block contenido %}
+<h1>Socios</h1>
+
+<form class="buscador" method="get" action="/socios">
+  <input name="q" value="{{ q }}" placeholder="Buscar por nombre, matrícula o correo" data-test="buscar-socio">
+  <button type="submit">Buscar</button>
+  {% if q %}<a class="limpiar" href="/socios">Limpiar</a>{% endif %}
+</form>
+
+<section class="panel">
+  <h2>Registrar un socio</h2>
+  <form class="rejilla" method="post" action="/socios">
+    <label>Matrícula<input name="matricula" data-test="matricula" required></label>
+    <label>Nombre completo<input name="nombre" data-test="nombre-socio" required></label>
+    <label>Correo<input name="correo" type="email" data-test="correo" required></label>
+    <label>Teléfono<input name="telefono" placeholder="809-000-0000"></label>
+    <button type="submit" data-test="guardar-socio">Registrar socio</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>{{ socios|length }} socio(s)</h2>
+  <table data-test="tabla-socios">
+    <thead>
+      <tr><th>Matrícula</th><th>Nombre</th><th>Correo</th><th>Teléfono</th>
+          <th class="num">Préstamos activos</th><th>Estado</th></tr>
+    </thead>
+    <tbody>
+    {% for s in socios %}
+      <tr data-test="fila-socio">
+        <td class="mono">{{ s.matricula }}</td>
+        <td><strong>{{ s.nombre }}</strong></td>
+        <td>{{ s.correo }}</td>
+        <td>{{ s.telefono or '—' }}</td>
+        <td class="num">
+          {{ activos[s.id] }}{% if activos[s.id] >= max_prestamos %}
+            <span class="alerta"> (límite)</span>{% endif %}
+        </td>
+        <td>{% if s.activo %}<span class="bien">Activo</span>
+            {% else %}<span class="alerta">Inactivo</span>{% endif %}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="vacio">No se encontraron socios.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

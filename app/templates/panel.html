@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% set activo = 'panel' %}
+{% block titulo %}Panel · BiblioITLA{% endblock %}
+{% block contenido %}
+<h1>Panel de control</h1>
+<p class="sub">Estado actual de la biblioteca</p>
+
+<section class="indicadores">
+  <div class="indicador"><span class="cifra" data-test="titulos">{{ resumen.titulos }}</span><span>Títulos</span></div>
+  <div class="indicador"><span class="cifra" data-test="ejemplares">{{ resumen.ejemplares }}</span><span>Ejemplares</span></div>
+  <div class="indicador ok"><span class="cifra" data-test="disponibles">{{ resumen.disponibles }}</span><span>Disponibles</span></div>
+  <div class="indicador azul"><span class="cifra" data-test="activos">{{ resumen.prestamos_activos }}</span><span>Préstamos activos</span></div>
+  <div class="indicador rojo"><span class="cifra" data-test="vencidos">{{ resumen.prestamos_vencidos }}</span><span>Vencidos</span></div>
+  <div class="indicador"><span class="cifra" data-test="socios">{{ resumen.socios_activos }}</span><span>Socios activos</span></div>
+</section>
+
+<div class="columnas">
+  <section class="panel">
+    <h2>Libros más prestados</h2>
+    {% if mas_prestados %}
+    <table>
+      <thead><tr><th>Título</th><th>Autor</th><th class="num">Veces</th></tr></thead>
+      <tbody>
+      {% for l in mas_prestados %}
+        <tr><td>{{ l.titulo }}</td><td>{{ l.autor }}</td><td class="num">{{ l.veces }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="vacio">Todavía no hay préstamos registrados.</p>{% endif %}
+  </section>
+
+  <section class="panel">
+    <h2>Préstamos vencidos</h2>
+    {% if vencidos %}
+    <table>
+      <thead><tr><th>Socio</th><th>Libro</th><th>Venció</th></tr></thead>
+      <tbody>
+      {% for p in vencidos %}
+        <tr><td>{{ p.socio.nombre }}</td><td>{{ p.libro.titulo }}</td>
+            <td class="alerta">{{ p.fecha_vencimiento }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="vacio">No hay préstamos vencidos.</p>{% endif %}
+  </section>
+</div>
+
+<p class="nota">Política vigente: máximo {{ max_prestamos }} préstamos por socio ·
+mora de RD$ {{ mora_dia }} por día de retraso.</p>
+{% endblock %}

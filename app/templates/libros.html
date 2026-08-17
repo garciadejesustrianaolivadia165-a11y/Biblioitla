@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% set activo = 'libros' %}
+{% block titulo %}Libros · BiblioITLA{% endblock %}
+{% block contenido %}
+<h1>Catálogo de libros</h1>
+
+<form class="buscador" method="get" action="/libros">
+  <input name="q" value="{{ q }}" placeholder="Buscar por título, autor o ISBN" data-test="buscar">
+  <select name="categoria">
+    <option value="">Todas las categorías</option>
+    {% for c in categorias %}
+      <option value="{{ c }}" {% if c==categoria_activa %}selected{% endif %}>{{ c }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" data-test="btn-buscar">Buscar</button>
+  {% if q or categoria_activa %}<a class="limpiar" href="/libros">Limpiar</a>{% endif %}
+</form>
+
+<section class="panel">
+  <h2>Registrar un libro nuevo</h2>
+  <form class="rejilla" method="post" action="/libros">
+    <label>ISBN<input name="isbn" data-test="isbn" required></label>
+    <label>Título<input name="titulo" data-test="titulo" required></label>
+    <label>Autor<input name="autor" data-test="autor" required></label>
+    <label>Categoría<input name="categoria" data-test="categoria" value="General"></label>
+    <label>Año<input name="anio" type="number" value="2024" min="0" max="2100"></label>
+    <label>Ejemplares<input name="ejemplares" type="number" value="1" min="1" data-test="ejemplares"></label>
+    <button type="submit" data-test="guardar-libro">Registrar libro</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>{{ libros|length }} libro(s) en el catálogo</h2>
+  <table data-test="tabla-libros">
+    <thead>
+      <tr><th>ISBN</th><th>Título</th><th>Autor</th><th>Categoría</th>
+          <th class="num">Ejemplares</th><th class="num">Disponibles</th><th></th></tr>
+    </thead>
+    <tbody>
+    {% for l in libros %}
+      <tr data-test="fila-libro">
+        <td class="mono">{{ l.isbn }}</td>
+        <td><strong>{{ l.titulo }}</strong></td>
+        <td>{{ l.autor }}</td>
+        <td><span class="etiqueta">{{ l.categoria }}</span></td>
+        <td class="num">{{ l.ejemplares }}</td>
+        <td class="num">
+          {% if l.disponibles > 0 %}<span class="bien">{{ l.disponibles }}</span>
+          {% else %}<span class="alerta">0</span>{% endif %}
+        </td>
+        <td>
+          <form method="post" action="/libros/{{ l.id }}/eliminar"
+                onsubmit="return confirm('¿Eliminar {{ l.titulo }}?')">
+            <button class="peligro pequeno" type="submit">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7" class="vacio">No se encontraron libros.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
